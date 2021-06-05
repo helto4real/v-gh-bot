@@ -1,0 +1,7 @@
+# Ignore all
+*
+*.log
+# Unignore all with extensions
+!*.*
+!*/
+!LICENCE
