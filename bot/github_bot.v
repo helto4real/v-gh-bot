@@ -2,7 +2,7 @@ module bot
 
 import vweb
 import x.json2
-// import time
+import os
 
 __global(
 	gtx &GlobalContext
@@ -12,22 +12,25 @@ fn init() {
 	gtx = new_global_context()
 }
 
+// GlobalContext is a hack until vweb supports
+// shared state. This is used mainly to share
+// a channel between requests and background tasks
+[heap]
 struct GlobalContext {
 	gh_events chan GhEvent = chan GhEvent{cap: 100}
 }
 
-pub struct GithubBot {
-	vweb.Context
-}
-
+// new_global_context creates new instance of GlobalContext
 fn new_global_context() &GlobalContext {
 	return &GlobalContext{}
 }
 
-pub fn new_bot() &GithubBot {
-	return &GithubBot{}
+// GitHubBot, the vweb app
+pub struct GithubBot {
+	vweb.Context
 }
 
+// gh_events provides the main webhook interface for Github events.
 ['/events'; post]
 pub fn (mut bot GithubBot) gh_events() vweb.Result {
 	eprintln('>>>>> received http request at /json_echo is: $bot.req')
@@ -37,7 +40,7 @@ pub fn (mut bot GithubBot) gh_events() vweb.Result {
 		return bot.server_error(428)
 	}
 
-	json := json2.fast_raw_decode(bot.req.data) or {
+	json := json2.raw_decode(bot.req.data) or {
 		json2.Any(json2.null)
 	}
 
@@ -50,14 +53,18 @@ pub fn (mut bot GithubBot) gh_events() vweb.Result {
 	return bot.ok('')
 }
 
+// index is the default page that can be used to see if bot is running
 ['/'; get]
 pub fn (mut app GithubBot) index() vweb.Result {
 	app.set_content_type(vweb.mime_types['.html'])
 	return app.ok('<html><body>Congratz! The bot is up and running!</body></html>')
 }
 
+// run starts the bot and process events
+// the port is configurable using the environment variable 'GH_BOT_WEBHOOK_PORT'
 pub fn run() {
-	mut app := new_bot()
-	go vweb.run(app, 8001)
+	mut app := &GithubBot{}
+	port := (os.environ()['GH_BOT_WEBHOOK_PORT'] or {"8001"}).int()
+	go vweb.run(app, port)
 	app.process_events()
 }

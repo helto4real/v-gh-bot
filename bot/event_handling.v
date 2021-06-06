@@ -10,7 +10,7 @@ fn (mut bot GithubBot) process_events() {
 		}
 		match event {
 			GhPingEvent {
-				eprintln('GOT PING EVENT: $event.hook_id')
+				eprintln('GOT PING EVENT: $event')
 			}
 			else {}
 		}
