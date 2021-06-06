@@ -25,4 +25,4 @@ jobs:
 
       - name: Test V fixed tests
         run: |
-          v test -enable-globals /tmp/bot
+          v -enable-globals test /tmp/bot
