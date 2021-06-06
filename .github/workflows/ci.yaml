@@ -12,7 +12,7 @@ on:
 jobs:
   # Ubuntu docker pre-built container
   build:
-    name: ubuntu-musl
+    name: build on ubuntu
     runs-on: ubuntu-20.04
     timeout-minutes: 45
     container:
@@ -25,4 +25,4 @@ jobs:
 
       - name: Test V fixed tests
         run: |
-          v test -enable-globals .
+          v test -enable-globals ${{github.workspace}}
