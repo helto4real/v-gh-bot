@@ -17,12 +17,12 @@ jobs:
     timeout-minutes: 45
     container:
       image: thevlang/vlang:buster
-      # volumes:
-      #   - ${{github.workspace}}:/opt/vlang
+      volumes:
+        - ${{github.workspace}}:/opt/vlang
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Test V fixed tests
         run: |
-          v test -enable-globals ${{github.workspace}}
+          v test -enable-globals /opt/vlang/bot
