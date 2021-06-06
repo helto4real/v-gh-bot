@@ -45,7 +45,7 @@ pub fn (mut bot GithubBot) gh_events() vweb.Result {
 		return bot.server_error(500)
 	}
 
-	handle_new_event(event, json)
+	handle_new_event(event, json, gtx.gh_events)
 
 	return bot.ok('')
 }

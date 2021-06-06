@@ -17,13 +17,11 @@ fn (mut bot GithubBot) process_events() {
 	}
 }
 
-fn handle_new_event(event string, body json2.Any) {
+fn handle_new_event(event string, body json2.Any, events chan GhEvent) {
 	match event {
 		'ping' {
-			mut ping_event := GhPingEvent{}
-			ping_event.from_json(body)
-			gtx.gh_events <- GhEvent(ping_event)
-			
+			mut ping_event := new_ping_event_from_json(body)
+			events <- GhEvent(ping_event)
 		}
 		else {}
 	}

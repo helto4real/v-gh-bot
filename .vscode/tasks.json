@@ -39,5 +39,20 @@
             },
             "problemMatcher": "$go"
         },
+        {
+            "label": "test",
+            "type": "shell",
+            "command": "v",
+            "args": [
+                
+                "-enable-globals",
+                "test",
+                "."
+            ],
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$go"
+        },
     ]
 }
