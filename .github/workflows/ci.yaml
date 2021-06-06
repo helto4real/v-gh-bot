@@ -25,4 +25,4 @@ jobs:
 
       - name: Test V fixed tests
         run: |
-          v test .
+          v test -enable-globals .
