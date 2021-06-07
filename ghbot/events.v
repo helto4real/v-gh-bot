@@ -24,7 +24,95 @@ fn new_ping_event_from_json(json json2.Any) GhPingEvent {
 
 pub struct GhIssueEvent {
 pub:
-	action string
+	action     string
+	issue      Issue
+	repository Repository
+	sender     User
+}
+
+fn new_issue_event_from_json(json json2.Any) GhIssueEvent {
+	mp := json.as_map()
+	return GhIssueEvent{
+		action: mp['action'].str()
+		issue: new_issue_from_json(mp['issue'])
+		repository: new_repository_from_json(mp['repository'])
+		sender: new_user_from_json(mp['sender'])
+	}
+}
+
+pub struct Issue {
+	url                      string
+	repository_url           string
+	labels_url               string
+	comments_url             string
+	events_url               string
+	html_url                 string
+	id                       i64
+	node_id                  string
+	number                   int
+	title                    string
+	user                     User
+	labels                   []string
+	state                    string
+	locked                   bool
+	assignee                 string
+	assignees                []string
+	milestone                string
+	comments                 int
+	created_at               time.Time
+	updated_at               time.Time
+	closed_at                time.Time
+	author_association       string
+	active_lock_reason       string
+	body                     string
+	performed_via_github_app string
+}
+
+pub fn new_issue_from_json(json json2.Any) Issue {
+	mut mp := json.as_map()
+	return Issue{
+		url: mp['url'].str()
+		repository_url: mp['repository_url'].str()
+		labels_url: mp['labels_url'].str()
+		comments_url: mp['comments_url'].str()
+		events_url: mp['events_url'].str()
+		html_url: mp['html_url'].str()
+		id: mp['id'].i64()
+		node_id: mp['node_id'].str()
+		number: mp['number'].int()
+		title: mp['title'].str()
+		user: new_user_from_json(mp['user'])
+		labels: mp['labels'].arr().map(it.str())
+		state: mp['state'].str()
+		locked: mp['locked'].bool()
+		assignee: mp['assignee'].str()
+		assignees: mp['assignees'].arr().map(it.str())
+		milestone: mp['milestone'].str()
+		comments: mp['comments'].int()
+		created_at: time.parse_iso8601(mp['created_at'].str()) or { time.Time{} }
+		updated_at: time.parse_iso8601(mp['updated_at'].str()) or { time.Time{} }
+		closed_at: time.parse_iso8601(mp['closed_at'].str()) or { time.Time{} }
+		author_association: mp['author_association'].str()
+		active_lock_reason: mp['active_lock_reason'].str()
+		body: mp['body'].str()
+		performed_via_github_app: mp['performed_via_github_app'].str()
+	}
+}
+
+pub struct Hook {
+pub mut:
+	id            i64
+	typ           string
+	name          string
+	active        bool
+	events        []string
+	config        Config
+	updated_at    time.Time
+	created_at    time.Time
+	url           string
+	test_url      string
+	ping_url      string
+	last_response Response
 }
 
 pub fn new_hook_from_json(json json2.Any) Hook {
@@ -43,22 +131,6 @@ pub fn new_hook_from_json(json json2.Any) Hook {
 		ping_url: mp['ping_url'].str()
 		last_response: new_response_from_json(mp['last_response'])
 	}
-}
-
-pub struct Hook {
-pub mut:
-	id            i64
-	typ           string
-	name          string
-	active        bool
-	events        []string
-	config        Config
-	updated_at    time.Time
-	created_at    time.Time
-	url           string
-	test_url      string
-	ping_url      string
-	last_response Response
 }
 
 pub struct Config {
@@ -92,12 +164,13 @@ pub fn new_response_from_json(json json2.Any) Response {
 		message: mp['message'].str()
 	}
 }
+
 pub struct License {
-    key string
-    name string
-    spdx_id string
-    url string
-    node_id string
+	key     string
+	name    string
+	spdx_id string
+	url     string
+	node_id string
 }
 
 pub fn new_license_from_json(json json2.Any) License {
@@ -195,7 +268,7 @@ pub fn new_repository_from_json(json json2.Any) Repository {
 		name: mp['name'].str()
 		full_name: mp['full_name'].str()
 		private: mp['private'].bool()
-		owner: new_owner_from_json(mp['owner'])
+		owner: new_user_from_json(mp['owner'])
 		html_url: mp['html_url'].str()
 		description: mp['description'].str()
 		fork: mp['fork'].str()
@@ -267,27 +340,27 @@ pub fn new_repository_from_json(json json2.Any) Repository {
 }
 
 pub struct User {
-	login string
-	id i64
-	node_id string
-	avatar_url string
-	gravatar_id string
-	url string
-	html_url string
-	followers_url string
-	following_url string
-	gists_url string
-	starred_url string
-	subscriptions_url string
-	organizations_url string
-	repos_url string
-	events_url string
+	login               string
+	id                  i64
+	node_id             string
+	avatar_url          string
+	gravatar_id         string
+	url                 string
+	html_url            string
+	followers_url       string
+	following_url       string
+	gists_url           string
+	starred_url         string
+	subscriptions_url   string
+	organizations_url   string
+	repos_url           string
+	events_url          string
 	received_events_url string
-	typ string
-	site_admin string
+	typ                 string
+	site_admin          string
 }
 
-pub fn new_owner_from_json(json json2.Any) User {
+pub fn new_user_from_json(json json2.Any) User {
 	mut mp := json.as_map()
 	return User{
 		login: mp['login'].str()
@@ -306,7 +379,7 @@ pub fn new_owner_from_json(json json2.Any) User {
 		repos_url: mp['repos_url'].str()
 		events_url: mp['events_url'].str()
 		received_events_url: mp['received_events_url'].str()
-		typ: mp['typ'].str()
+		typ: mp['type'].str()
 		site_admin: mp['site_admin'].str()
 	}
 }

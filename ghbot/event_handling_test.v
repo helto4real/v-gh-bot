@@ -3,6 +3,7 @@ module ghbot
 import os
 import x.json2
 
+// todo: add all elements
 fn test_ping_event() {
 	json := get_test_file_as_any('./ghbot/events/ping.json') or { panic(err.msg) }
 	ch := chan GhEvent{cap: 100}
@@ -19,6 +20,30 @@ fn test_ping_event() {
 		assert res.hook.name=='web'
 		assert res.repository.owner.login == 'helto4real'
 		assert res.repository.license.key == 'mit'
+	} else {
+		assert false
+	}
+}
+
+// todo: add all elements
+fn test_issue_event() {
+	json := get_test_file_as_any('./ghbot/events/new_issue.json') or { panic(err.msg) }
+	ch := chan GhEvent{cap: 100}
+	handle_new_event('issues', json, ch)
+
+	res := <-ch
+
+	if res is GhIssueEvent {
+		eprintln(res)
+		assert res.action == 'opened'
+		// test the issue parsing
+		assert res.issue.id == 123456
+		assert res.issue.number == 2
+		assert res.issue.user.login == 'helto4real'
+		assert res.issue.user.id == 12345
+		assert res.repository.owner.login == 'helto4real'
+		assert res.sender.login == 'helto4real'
+
 	} else {
 		assert false
 	}

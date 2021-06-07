@@ -1,3 +1,6 @@
+// ghbot implements an simple strongly typed github bot in V
+// for now it uses globals until vweb support state between requests
+// sorry for the hack :)
 module ghbot
 
 import vweb

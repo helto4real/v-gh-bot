@@ -139,7 +139,7 @@
             "name": "MIT License",
             "spdx_id": "MIT",
             "url": "https://api.github.com/licenses/mit",
-            "node_id": "node_id",
+            "node_id": "node_id"
         },
         "forks": 0,
         "open_issues": 1,

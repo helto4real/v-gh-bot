@@ -1,4 +1,3 @@
-import vweb
 import ghbot
 import net.http
 import time

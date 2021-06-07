@@ -11,7 +11,10 @@ fn main() {
 			ghbot.GhPingEvent {
 				eprintln('GOT PING EVENT: $event')
 			}
-			else {}
+			ghbot.GhIssueEvent {
+				eprintln('GOT ISSUE EVENT: $event')
+			}
+			// else {}
 		}
 	}
 
