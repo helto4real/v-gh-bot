@@ -1,3 +1,4 @@
+
 import ghbot
 fn main() {
 	mut bot := ghbot.new_bot()
@@ -16,3 +17,4 @@ fn main() {
 	}
 
 }
+

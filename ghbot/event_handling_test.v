@@ -1,10 +1,10 @@
-module bot
+module ghbot
 
 import os
 import x.json2
 
 fn test_ping_event() {
-	json := get_test_file_as_any('./bot/events/ping.json') or { panic(err.msg) }
+	json := get_test_file_as_any('./ghbot/events/ping.json') or { panic(err.msg) }
 	ch := chan GhEvent{cap: 100}
 	handle_new_event('ping', json, ch)
 

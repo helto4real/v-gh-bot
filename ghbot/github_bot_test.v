@@ -1,5 +1,5 @@
 import vweb
-import bot
+import ghbot
 import net.http
 import time
 
@@ -9,6 +9,7 @@ fn testsuite_begin() {
 }
 
 fn run_bot() {
+	mut bot := ghbot.new_bot()
 	bot.run()
 }
 

@@ -1,4 +1,4 @@
-module bot
+module ghbot
 
 import vweb
 import x.json2
@@ -62,9 +62,11 @@ pub fn (mut app GithubBot) index() vweb.Result {
 
 // run starts the bot and process events
 // the port is configurable using the environment variable 'GH_BOT_WEBHOOK_PORT'
-pub fn run() {
-	mut app := &GithubBot{}
+pub fn (bot &GithubBot) run() {
 	port := (os.environ()['GH_BOT_WEBHOOK_PORT'] or {"8001"}).int()
-	go vweb.run(app, port)
-	app.process_events()
+	vweb.run(bot, port)
+}
+
+pub fn new_bot() &GithubBot {
+	return &GithubBot{}
 }

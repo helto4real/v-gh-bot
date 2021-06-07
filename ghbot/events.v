@@ -1,4 +1,4 @@
-module bot
+module ghbot
 
 import x.json2
 import time
