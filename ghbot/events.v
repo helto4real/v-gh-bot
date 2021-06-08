@@ -6,33 +6,35 @@ import json
 
 pub type GhEvent = GhIssueEvent | GhPingEvent
 
+[heap]
 pub struct GhPingEvent {
 pub:
 	hook_id    i64
-	hook       Hook
-	repository Repository
+	hook       &Hook
+	repository &Repository
 }
 
-fn new_ping_event_from_json(json json2.Any) GhPingEvent {
+fn new_ping_event_from_json(json json2.Any) &GhPingEvent {
 	mp := json.as_map()
-	return GhPingEvent{
+	return &GhPingEvent{
 		hook_id: mp['hook_id'].i64()
 		hook: new_hook_from_json(mp['hook'])
 		repository: new_repository_from_json(mp['repository'])
 	}
 }
 
+[heap]
 pub struct GhIssueEvent {
 pub:
 	action     string
-	issue      Issue
-	repository Repository
-	sender     User
+	issue      &Issue
+	repository &Repository
+	sender     &User
 }
 
-fn new_issue_event_from_json(json json2.Any) GhIssueEvent {
+fn new_issue_event_from_json(json json2.Any) &GhIssueEvent {
 	mp := json.as_map()
-	return GhIssueEvent{
+	return &GhIssueEvent{
 		action: mp['action'].str()
 		issue: new_issue_from_json(mp['issue'])
 		repository: new_repository_from_json(mp['repository'])
@@ -40,6 +42,7 @@ fn new_issue_event_from_json(json json2.Any) GhIssueEvent {
 	}
 }
 
+[heap]
 pub struct Issue {
 	url                      string
 	repository_url           string
@@ -51,7 +54,7 @@ pub struct Issue {
 	node_id                  string
 	number                   int
 	title                    string
-	user                     User
+	user                     &User
 	labels                   []string
 	state                    string
 	locked                   bool
@@ -68,9 +71,10 @@ pub struct Issue {
 	performed_via_github_app string
 }
 
-pub fn new_issue_from_json(json json2.Any) Issue {
+
+pub fn new_issue_from_json(json json2.Any) &Issue {
 	mut mp := json.as_map()
-	return Issue{
+	return &Issue{
 		url: mp['url'].str()
 		repository_url: mp['repository_url'].str()
 		labels_url: mp['labels_url'].str()
@@ -99,6 +103,7 @@ pub fn new_issue_from_json(json json2.Any) Issue {
 	}
 }
 
+[heap]
 pub struct Hook {
 pub mut:
 	id            i64
@@ -106,18 +111,18 @@ pub mut:
 	name          string
 	active        bool
 	events        []string
-	config        Config
+	config        &Config
 	updated_at    time.Time
 	created_at    time.Time
 	url           string
 	test_url      string
 	ping_url      string
-	last_response Response
+	last_response &Response
 }
 
-pub fn new_hook_from_json(json json2.Any) Hook {
+pub fn new_hook_from_json(json json2.Any) &Hook {
 	mut mp := json.as_map()
-	return Hook{
+	return &Hook{
 		id: mp['id'].i64()
 		typ: mp['type'].str()
 		name: mp['name'].str()
@@ -133,6 +138,7 @@ pub fn new_hook_from_json(json json2.Any) Hook {
 	}
 }
 
+[heap]
 pub struct Config {
 	content_type string
 	insecure_ssl string
@@ -140,9 +146,9 @@ pub struct Config {
 	url          string
 }
 
-pub fn new_config_from_json(json json2.Any) Config {
+pub fn new_config_from_json(json json2.Any) &Config {
 	mut mp := json.as_map()
-	return Config{
+	return &Config{
 		content_type: mp['content_type'].str()
 		insecure_ssl: mp['insecure_ssl'].str()
 		secret: mp['secret'].str()
@@ -150,21 +156,23 @@ pub fn new_config_from_json(json json2.Any) Config {
 	}
 }
 
+[heap]
 pub struct Response {
 	code    int
 	status  string
 	message string
 }
 
-pub fn new_response_from_json(json json2.Any) Response {
+pub fn new_response_from_json(json json2.Any) &Response {
 	mut mp := json.as_map()
-	return Response{
+	return &Response{
 		code: mp['code'].int()
 		status: mp['status'].str()
 		message: mp['message'].str()
 	}
 }
 
+[heap]
 pub struct License {
 	key     string
 	name    string
@@ -173,9 +181,9 @@ pub struct License {
 	node_id string
 }
 
-pub fn new_license_from_json(json json2.Any) License {
+pub fn new_license_from_json(json json2.Any) &License {
 	mut mp := json.as_map()
-	return License{
+	return &License{
 		key: mp['key'].str()
 		name: mp['name'].str()
 		spdx_id: mp['spdx_id'].str()
@@ -184,13 +192,14 @@ pub fn new_license_from_json(json json2.Any) License {
 	}
 }
 
+[heap]
 pub struct Repository {
 	id                i64
 	node_id           string
 	name              string
 	full_name         string
 	private           bool
-	owner             User
+	owner             &User
 	html_url          string
 	description       string
 	fork              string
@@ -253,16 +262,16 @@ pub struct Repository {
 	archived          string
 	disabled          string
 	open_issues_count string
-	license           License
+	license           &License
 	forks             string
 	open_issues       string
 	watchers          string
 	default_branch    string
 }
 
-pub fn new_repository_from_json(json json2.Any) Repository {
+pub fn new_repository_from_json(json json2.Any) &Repository {
 	mut mp := json.as_map()
-	return Repository{
+	return &Repository{
 		id: mp['id'].i64()
 		node_id: mp['node_id'].str()
 		name: mp['name'].str()
@@ -339,6 +348,7 @@ pub fn new_repository_from_json(json json2.Any) Repository {
 	}
 }
 
+[heap]
 pub struct User {
 	login               string
 	id                  i64
@@ -360,9 +370,9 @@ pub struct User {
 	site_admin          string
 }
 
-pub fn new_user_from_json(json json2.Any) User {
+pub fn new_user_from_json(json json2.Any) &User {
 	mut mp := json.as_map()
-	return User{
+	return &User{
 		login: mp['login'].str()
 		id: mp['id'].i64()
 		node_id: mp['node_id'].str()
