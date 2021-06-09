@@ -3,9 +3,9 @@
 // sorry for the hack :)
 module ghbot
 
-import nedpals.vex.router
-import nedpals.vex.server
-import nedpals.vex.ctx
+// import nedpals.vex.router
+// import nedpals.vex.server
+// import nedpals.vex.ctx
 
 import vweb
 import x.json2
