@@ -4,12 +4,12 @@ import os
 import x.json2
 
 // todo: add all elements
-fn test_ping_event() {
+fn test_ping_event() ? {
 	json := get_test_file_as_any('./ghbot/events/ping.json') or { panic(err.msg) }
-	ch := chan &GhEvent{cap: 100}
-	handle_new_event('ping', json, ch)
+	mut bot := new_bot()
+	bot.handle_new_event('ping', json)
 
-	res := <-ch
+	res := bot.read_next_event() ?
 
 	if res is GhPingEvent {
 		eprintln(res)
@@ -26,12 +26,13 @@ fn test_ping_event() {
 }
 
 // todo: add all elements
-fn test_issue_event() {
+fn test_issue_event() ? {
 	json := get_test_file_as_any('./ghbot/events/new_issue.json') or { panic(err.msg) }
 	ch := chan &GhEvent{cap: 100}
-	handle_new_event('issues', json, ch)
+	mut bot := new_bot()
+	bot.handle_new_event('issues', json)
 
-	res := <-ch
+	res := bot.read_next_event() ?
 
 	if res is GhIssueEvent {
 		eprintln(res)
@@ -48,12 +49,12 @@ fn test_issue_event() {
 	}
 }
 
-fn test_edited_issue_event() {
+fn test_edited_issue_event() ? {
 	json := get_test_file_as_any('./ghbot/events/update_issue.json') or { panic(err.msg) }
-	ch := chan &GhEvent{cap: 100}
-	handle_new_event('issues', json, ch)
+	mut bot := new_bot()
+	bot.handle_new_event('issues', json)
 
-	res := <-ch
+	res := bot.read_next_event() ?
 
 	if res is GhIssueEvent {
 		eprintln(res)
