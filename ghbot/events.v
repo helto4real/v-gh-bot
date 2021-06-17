@@ -71,7 +71,6 @@ pub struct Issue {
 	performed_via_github_app string
 }
 
-
 pub fn new_issue_from_json(json json2.Any) &Issue {
 	mut mp := json.as_map()
 	return &Issue{

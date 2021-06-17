@@ -6,42 +6,32 @@ module ghbot
 // import nedpals.vex.router
 // import nedpals.vex.server
 // import nedpals.vex.ctx
-
 import vweb
 import x.json2
 import os
 
-__global(
-	
-	gtx &GlobalContext
-)
-
-fn init() {
-	gtx = new_global_context()
-}
-
-// GlobalContext is a hack until vweb supports
-// shared state. This is used mainly to share
-// a channel between requests and background tasks
+// BotContext holds the context that are shared
+// between requests
 [heap]
-struct GlobalContext {
-	gh_events chan &GhEvent = chan &GhEvent{cap: 100}
+struct BotContext {
+	events chan &GhEvent = chan &GhEvent{cap: 100}
 }
 
-// new_global_context creates new instance of GlobalContext
-fn new_global_context() &GlobalContext {
-	return &GlobalContext{}
+// new_bot_context creates new instance of BotContext
+fn new_bot_context() &BotContext {
+	return &BotContext{}
 }
 
 // GitHubBot, the vweb app
 pub struct GithubBot {
 	vweb.Context
-	gh_events chan &GhEvent = gtx.gh_events
+	ctx shared BotContext
+	// events chan &GhEvent = gtx.events
 }
 
-// gh_events provides the main webhook interface for Github events.
+// events provides the main webhook interface for Github events.
 ['/events'; post]
-pub fn (mut bot GithubBot) gh_events() vweb.Result {
+pub fn (mut bot GithubBot) events() vweb.Result {
 	eprintln('>>>>> received http request at /json_echo is: $bot.req')
 
 	event := bot.req.header.get_custom('X-Github-Event') or {
@@ -49,15 +39,14 @@ pub fn (mut bot GithubBot) gh_events() vweb.Result {
 		return bot.server_error(428)
 	}
 
-	json := json2.raw_decode(bot.req.data) or {
-		json2.Any(json2.null)
-	}
+	json := json2.raw_decode(bot.req.data) or { json2.Any(json2.null) }
 
 	if json == json2.Any(json2.null) {
 		return bot.server_error(500)
 	}
-
-	handle_new_event(event, json, gtx.gh_events)
+	lock bot.ctx {
+		handle_new_event(event, json, bot.ctx.events)
+	}
 
 	return bot.ok('')
 }
@@ -72,35 +61,12 @@ pub fn (mut app GithubBot) index() vweb.Result {
 // run starts the bot and process events
 // the port is configurable using the environment variable 'GH_BOT_WEBHOOK_PORT'
 pub fn (mut bot GithubBot) run() {
-	port := (os.environ()['GH_BOT_WEBHOOK_PORT'] or {"8001"}).int()
-
-	// mut app := router.new()
-	// app.inject(bot)
-	// app.route(.post, '/events', fn (req &ctx.Req, mut res ctx.Resp) {
-    //     bot := &GithubBot(req.ctx)
-	// 	event := req.headers['X-GitHub-Event'][0] or {
-	// 		// require the event header to be present
-	// 		res.send('', 428)
-	// 		return
-	// 	}
-
-	// 	json := json2.raw_decode(req.body.bytestr()) or {
-	// 		json2.Any(json2.null)
-	// 	}
-
-	// 	if json == json2.Any(json2.null) {
-	// 		res.send('', 500)
-	// 		return
-	// 	}
-
-	// 	handle_new_event(event, json, bot.gh_events)
-	// 	res.send('', 200)
-
-	// 	})
-	// server.serve(app, port)
+	port := (os.environ()['GH_BOT_WEBHOOK_PORT'] or { '8001' }).int()
 	vweb.run(bot, port)
 }
 
 pub fn new_bot() &GithubBot {
-	return &GithubBot{}
+	return &GithubBot{
+		ctx: BotContext{}
+	}
 }

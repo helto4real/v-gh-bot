@@ -17,7 +17,7 @@ fn test_ping_event() {
 		// test the hook parsing
 		assert res.hook.id == 123123123
 		assert res.hook.active
-		assert res.hook.name=='web'
+		assert res.hook.name == 'web'
 		assert res.repository.owner.login == 'helto4real'
 		assert res.repository.license.key == 'mit'
 	} else {
@@ -43,7 +43,6 @@ fn test_issue_event() {
 		assert res.issue.user.id == 12345
 		assert res.repository.owner.login == 'helto4real'
 		assert res.sender.login == 'helto4real'
-
 	} else {
 		assert false
 	}
@@ -66,7 +65,6 @@ fn test_edited_issue_event() {
 		assert res.issue.user.id == 26500160
 		assert res.repository.owner.login == 'helto4real'
 		assert res.sender.login == 'helto4real'
-
 	} else {
 		assert false
 	}
