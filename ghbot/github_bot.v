@@ -44,9 +44,7 @@ pub fn (mut bot GithubBot) events() vweb.Result {
 	if json == json2.Any(json2.null) {
 		return bot.server_error(500)
 	}
-	lock bot.ctx {
-		handle_new_event(event, json, bot.ctx.events)
-	}
+	bot.handle_new_event(event, json)
 
 	return bot.ok('')
 }
