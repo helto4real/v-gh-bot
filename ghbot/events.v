@@ -2,7 +2,6 @@ module ghbot
 
 import x.json2
 import time
-import json
 
 pub type GhEvent = GhIssueEvent | GhPingEvent
 
