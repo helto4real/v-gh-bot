@@ -2,6 +2,7 @@ module ghbot
 
 import x.json2
 import time
+import json
 
 pub type GhEvent = GhIssueEvent | GhPingEvent
 
@@ -181,7 +182,6 @@ pub struct License {
 	node_id string
 }
 
-
 pub fn new_license_from_json(json json2.Any) &License {
 	mut mp := json.as_map()
 	return &License{
@@ -195,22 +195,22 @@ pub fn new_license_from_json(json json2.Any) &License {
 
 [heap]
 pub struct Comment {
-	url string // "https://api.github.com/repos/helto4real/v-gh-bot/issues/comments/855191824",
-	html_url string // "https://github.com/helto4real/v-gh-bot/issues/2#issuecomment-855191824",
-	issue_url string // "https://api.github.com/repos/helto4real/v-gh-bot/issues/2",
-	id i64 // 123123123,
-	node_id string // "node_id",
-	user User // {
-	created_at time.Time // "2021-06-05T06:20:08Z",
-	updated_at time.Time // "2021-06-05T06:20:08Z",
-	author_association string // "OWNER",
-	body string // "a comment",
-	performed_via_github_app string // null
+	url                      string    // "https://api.github.com/repos/helto4real/v-gh-bot/issues/comments/855191824",
+	html_url                 string    // "https://github.com/helto4real/v-gh-bot/issues/2#issuecomment-855191824",
+	issue_url                string    // "https://api.github.com/repos/helto4real/v-gh-bot/issues/2",
+	id                       i64       // 123123123,
+	node_id                  string    // "node_id",
+	user                     User      // {
+	created_at               time.Time // "2021-06-05T06:20:08Z",
+	updated_at               time.Time // "2021-06-05T06:20:08Z",
+	author_association       string    // "OWNER",
+	body                     string    // "a comment",
+	performed_via_github_app string    // null
 }
 
 pub fn new_comment_from_json(json json2.Any) &Comment {
 	mut mp := json.as_map()
-	return &Comment {
+	return &Comment{
 		url: mp['url'].str()
 		html_url: mp['html_url'].str()
 		issue_url: mp['issue_url'].str()
@@ -227,7 +227,7 @@ pub fn new_comment_from_json(json json2.Any) &Comment {
 
 // [heap]
 // pub struct Body {
-	
+
 // }
 
 [heap]
