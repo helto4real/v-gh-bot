@@ -27,6 +27,7 @@ pub struct GhIssueEvent {
 pub:
 	action     string
 	issue      &Issue
+	comment    &Comment
 	repository &Repository
 	sender     &User
 }
@@ -36,6 +37,7 @@ fn new_issue_event_from_json(json json2.Any) &GhIssueEvent {
 	return &GhIssueEvent{
 		action: mp['action'].str()
 		issue: new_issue_from_json(mp['issue'])
+		comment: new_comment_from_json(mp['comment'])
 		repository: new_repository_from_json(mp['repository'])
 		sender: new_user_from_json(mp['sender'])
 	}
@@ -179,6 +181,7 @@ pub struct License {
 	node_id string
 }
 
+
 pub fn new_license_from_json(json json2.Any) &License {
 	mut mp := json.as_map()
 	return &License{
@@ -189,6 +192,43 @@ pub fn new_license_from_json(json json2.Any) &License {
 		node_id: mp['node_id'].str()
 	}
 }
+
+[heap]
+pub struct Comment {
+	url string // "https://api.github.com/repos/helto4real/v-gh-bot/issues/comments/855191824",
+	html_url string // "https://github.com/helto4real/v-gh-bot/issues/2#issuecomment-855191824",
+	issue_url string // "https://api.github.com/repos/helto4real/v-gh-bot/issues/2",
+	id i64 // 123123123,
+	node_id string // "node_id",
+	user User // {
+	created_at time.Time // "2021-06-05T06:20:08Z",
+	updated_at time.Time // "2021-06-05T06:20:08Z",
+	author_association string // "OWNER",
+	body string // "a comment",
+	performed_via_github_app string // null
+}
+
+pub fn new_comment_from_json(json json2.Any) &Comment {
+	mut mp := json.as_map()
+	return &Comment {
+		url: mp['url'].str()
+		html_url: mp['html_url'].str()
+		issue_url: mp['issue_url'].str()
+		id: mp['id'].i64()
+		node_id: mp['node_id'].str()
+		user: new_user_from_json(mp['user'])
+		created_at: time.parse_iso8601(mp['created_at'].str()) or { time.Time{} }
+		updated_at: time.parse_iso8601(mp['updated_at'].str()) or { time.Time{} }
+		author_association: mp['author_association'].str()
+		body: mp['body'].str()
+		performed_via_github_app: mp['performed_via_github_app'].str()
+	}
+}
+
+// [heap]
+// pub struct Body {
+	
+// }
 
 [heap]
 pub struct Repository {

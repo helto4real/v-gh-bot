@@ -21,6 +21,12 @@ fn (mut bot GithubBot) handle_new_event(event string, body json2.Any) {
 				bot.ctx.events <- &GhEvent(issue_event)
 			}
 		}
+		'issue_comment' {
+			mut issue_event := new_issue_event_from_json(body)
+			lock bot.ctx {
+				bot.ctx.events <- &GhEvent(issue_event)
+			}
+		}
 		else {}
 	}
 }
